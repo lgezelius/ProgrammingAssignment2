@@ -17,7 +17,7 @@
 ## > my_matrix$set(rbind(c(1, -1/4), c(-1/4, 1)))
 
 ## makeCacheMatrix function creates an object that can cache the inverse of a matrix. 
-## This functions creates an object, which is a list containing functions to
+## This function creates an object, which is a list containing functions to
 ## - set the value of the matrix
 ## - get the value of the matrix
 ## - set the value of the inverse
@@ -26,29 +26,33 @@
 makeCacheMatrix <- function(m = matrix()) {
   ## m and i are variables bound to the cacheMatrix object.
   ## m is the matrix and i is the inverse matrix.
-  ## The following are equivalent ways to create and set a cacheMatrix:
+  ## The following are equivalent ways to create and set a cacheMatrix object:
   ## > my_matrix = makeCacheMatrix(rbind(c(1, -1/4), c(-1/4, 1)))
   ## OR
   ## > my_matrix = makeCacheMatrix()
   ## > my_matrix$set(rbind(c(1, -1/4), c(-1/4, 1)))
+
   i <- NULL
   set <- function(y) {
-    # set m and i in the parent environment (the makeCacheMatrix function)
+    # set m and i in the parent environment 
     m <<- y
     i <<- NULL
   }
+  
   # The get function returns the matrix
   get <- function() m
+  
   # The setsolve function sets the inverse matrix and is intended to be called only by cacheSolve
   setsolve <- function(solve) i <<- solve
+  
   # the getsolve function gets the inverse matrix and is intended to be called only by cacheSolve
   getsolve <- function() i
+  
   # make the functions accessible using $
   list(set = set, get = get,
        setsolve = setsolve,
        getsolve = getsolve)
 }
-
 
 ## The cacheSolve function computes the inverse of the matrix stored in a cacheMatrix. 
 ## If the inverse has already been calculated (and the matrix has not changed), 
@@ -57,14 +61,17 @@ makeCacheMatrix <- function(m = matrix()) {
 ## and sets the value of the inverse in the cache via the setsolve function.
 
 cacheSolve <- function(cm, ...) {
-  ## cm is the cacheMatrix and i is the inverse of the cacheMatrix matrix
+  ## cm is a cacheMatrix object and i is the inverse of the cm matrix
+  
   ## retrieve the inverse from cacheMatrix
   i <- cm$getsolve()
+  
   ## if the inverse is not null, brag about caching and return the inverse
   if(!is.null(i)) {
     message("getting cached data")
     return(i)
   }
+  
   ## otherwise calculate the inverse of the cm matrix, store the inverse in cm, and return the inverse
   m <- cm$get()
   i <- solve(m, ...)
